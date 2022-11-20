@@ -21,10 +21,10 @@ def seq_collate(data):
 
     # Data format: batch, input_size, seq_len
     # LSTM input format: seq_len, batch, input_size
-    obs_traj = torch.cat(obs_seq_list, dim=0).permute(3, 0, 1)
-    pred_traj = torch.cat(pred_seq_list, dim=0).permute(3, 0, 1)
-    obs_traj_rel = torch.cat(obs_seq_rel_list, dim=0).permute(3, 0, 1)
-    pred_traj_rel = torch.cat(pred_seq_rel_list, dim=0).permute(3, 0, 1)
+    obs_traj = torch.cat(obs_seq_list, dim=0).permute(2, 0, 1)
+    pred_traj = torch.cat(pred_seq_list, dim=0).permute(2, 0, 1)
+    obs_traj_rel = torch.cat(obs_seq_rel_list, dim=0).permute(2, 0, 1)
+    pred_traj_rel = torch.cat(pred_seq_rel_list, dim=0).permute(2, 0, 1)
     non_linear_ped = torch.cat(non_linear_ped_list)
     loss_mask = torch.cat(loss_mask_list, dim=0)
     seq_start_end = torch.LongTensor(seq_start_end)
