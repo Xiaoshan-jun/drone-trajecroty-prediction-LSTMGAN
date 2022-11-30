@@ -23,11 +23,11 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model_path', default = 'models/sgan-models', type=str)
-parser.add_argument('--dataset_name', default='z_dependent', type=str)
+parser.add_argument('--dataset_name', default='vertical', type=str)
 parser.add_argument('--delim', default='tab')
 parser.add_argument('--loader_num_workers', default=0, type=int)
-parser.add_argument('--obs_len', default=8, type=int)
-parser.add_argument('--pred_len', default=8, type=int)
+parser.add_argument('--obs_len', default=10, type=int)
+parser.add_argument('--pred_len', default=10, type=int)
 parser.add_argument('--skip', default=1, type=int)
 # Optimization
 parser.add_argument('--batch_size', default=1, type=int)
@@ -64,15 +64,26 @@ def generateFake(args, loader, generator):
             batch = [tensor.cuda() for tensor in batch]
             (obs_traj, pred_traj_gt, obs_traj_rel, pred_traj_gt_rel,
              non_linear_ped, loss_mask, seq_start_end) = batch
-            print(obs_traj)
+            #print(obs_traj)
+            fig = plt.figure()
+            ax = fig.add_subplot(projection='3d')
+            obs_trajp = obs_traj.cpu().numpy().reshape(10,3)
+            pred_traj_gtp = pred_traj_gt.cpu().numpy().reshape(10,3)
+            print(pred_traj_gtp)
+            for i in range(8):
+                ax.scatter(obs_trajp[i][0],obs_trajp[i][1], obs_trajp[i][2], s = 10, label= "generated trajectory", c = 'red')
+                ax.scatter(pred_traj_gtp[i][0],pred_traj_gtp[i][1], pred_traj_gtp[i][2], s = 10, label= "generated trajectory", c = 'red')
             pred_traj_fake_rel = generator(
                     obs_traj, obs_traj_rel, seq_start_end
                 )
             pred_traj_fake = relative_to_abs(
                     pred_traj_fake_rel, obs_traj[-1]
                 )
-
-            print(pred_traj_fake)
+            pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(10,3)
+            #pred_traj_fake = np.transpose(pred_traj_fake)
+            for i in range(8):
+                ax.scatter(pred_traj_fake[i][0],pred_traj_fake[i][1], pred_traj_fake[i][2], s = 10, label= "generated trajectory", c = 'blue')
+            #print(pred_traj_fake)
         return pred_traj_fake
 
 def main(args):
@@ -93,16 +104,17 @@ def main(args):
         
         
        
-        vis_path = get_dset_path(args.dataset_name, 'vis')
+    vis_path = get_dset_path(args.dataset_name, 'vis')
 
-        _, vis_loader = data_loader(args, vis_path)
-        
-        pred_traj_fake = generateFake(args, vis_loader, generator)
-        pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(8,3)
-        pred_traj_fake = np.transpose(pred_traj_fake)
-        #print(pred_traj_fake)
-        plt.scatter(pred_traj_fake[0],pred_traj_fake[1],s = 10, label= "generated trajectory", c = 'blue')
-        plt.savefig('books_read%i.png' %i)
+    _, vis_loader = data_loader(args, vis_path)
+    
+    pred_traj_fake = generateFake(args, vis_loader, generator)
+    pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(8,3)
+    pred_traj_fake = np.transpose(pred_traj_fake)
+    #print(pred_traj_fake)
+    
+    
+    #plt.savefig('books_read%i.png' %i)
     
 if __name__ == '__main__':
     args = parser.parse_args()

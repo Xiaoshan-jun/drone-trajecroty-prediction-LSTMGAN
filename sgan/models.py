@@ -60,7 +60,9 @@ class Encoder(nn.Module):
         """
         # Encode observed Trajectory
         batch = obs_traj.size(1)
-        obs_traj_embedding = self.spatial_embedding(obs_traj.contiguous().view(-1, 3))
+        # print(obs_traj.shape)
+        # print(obs_traj.contiguous().view(-1, 3).shape)
+        obs_traj_embedding = self.spatial_embedding(obs_traj.reshape(-1, 3))
         obs_traj_embedding = obs_traj_embedding.view(
             -1, batch, self.embedding_dim
         )

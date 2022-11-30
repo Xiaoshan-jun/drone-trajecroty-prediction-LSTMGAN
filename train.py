@@ -27,15 +27,15 @@ logging.basicConfig(level=logging.INFO, format=FORMAT, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 # Dataset options
-parser.add_argument('--dataset_name', default='z_dependent', type=str)
+parser.add_argument('--dataset_name', default='vertical', type=str)
 parser.add_argument('--delim', default='\t')
 parser.add_argument('--loader_num_workers', default=0, type=int)
-parser.add_argument('--obs_len', default=8, type=int)
-parser.add_argument('--pred_len', default=8, type=int)
+parser.add_argument('--obs_len', default=10, type=int)
+parser.add_argument('--pred_len', default=10, type=int)
 parser.add_argument('--skip', default=1, type=int)
 
 # Optimization
-parser.add_argument('--batch_size', default=32, type=int)
+parser.add_argument('--batch_size', default=64, type=int)
 parser.add_argument('--num_iterations', default=10000, type=int)
 parser.add_argument('--num_epochs', default=200, type=int)
 
@@ -48,17 +48,17 @@ parser.add_argument('--mlp_dim', default=1024, type=int)
 
 # Generator Options
 parser.add_argument('--encoder_h_dim_g', default=64, type=int)
-parser.add_argument('--decoder_h_dim_g', default=128, type=int)
-parser.add_argument('--noise_dim', default=(8,), type=int_tuple)
+parser.add_argument('--decoder_h_dim_g', default=64, type=int)
+parser.add_argument('--noise_dim', default=(0,), type=int_tuple)
 parser.add_argument('--noise_type', default='gaussian')
-parser.add_argument('--noise_mix_type', default='global')
+parser.add_argument('--noise_mix_type', default='ped')
 parser.add_argument('--clipping_threshold_g', default=0, type=float)
 parser.add_argument('--g_learning_rate', default=5e-4, type=float)
 parser.add_argument('--g_steps', default=1, type=int)
 
 # Pooling Options
 parser.add_argument('--pooling_type', default='pool_net')
-parser.add_argument('--pool_every_timestep', default=1, type=bool_flag)
+parser.add_argument('--pool_every_timestep', default=False, type=bool_flag)
 
 # Pool Net Option
 parser.add_argument('--bottleneck_dim', default=1024, type=int)
@@ -82,9 +82,9 @@ parser.add_argument('--best_k', default=1, type=int)
 parser.add_argument('--output_dir', default=os.getcwd())
 parser.add_argument('--print_every', default=5, type=int)
 parser.add_argument('--checkpoint_every', default=100, type=int)
-parser.add_argument('--checkpoint_name', default='checkpoint')
+parser.add_argument('--checkpoint_name', default='checkpoint2')
 parser.add_argument('--checkpoint_start_from', default=None)
-parser.add_argument('--restore_from_checkpoint', default=1, type=int)
+parser.add_argument('--restore_from_checkpoint', default=0, type=int)
 parser.add_argument('--num_samples_check', default=5000, type=int)
 
 # Misc
@@ -365,6 +365,7 @@ def discriminator_step(
     batch = [tensor.cuda() for tensor in batch]
     (obs_traj, pred_traj_gt, obs_traj_rel, pred_traj_gt_rel, non_linear_ped,
      loss_mask, seq_start_end) = batch
+    #print(obs_traj.shape)
     losses = {}
     loss = torch.zeros(1).to(pred_traj_gt)
 
