@@ -19,7 +19,7 @@ def make_mlp(dim_list, activation='relu', batch_norm=True, dropout=0):
 
 def get_noise(shape, noise_type):
     if noise_type == 'gaussian':
-        return torch.randn(*shape).cuda()
+        return (torch.randn(*shape)*10).cuda()
     elif noise_type == 'uniform':
         return torch.rand(*shape).sub_(0.5).mul_(2.0).cuda()
     raise ValueError('Unrecognized noise type "%s"' % noise_type)

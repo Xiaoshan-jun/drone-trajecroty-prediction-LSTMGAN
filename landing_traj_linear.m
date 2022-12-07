@@ -1,13 +1,13 @@
 %%
 %straight line
-fileID = fopen('datasets/linear/train/train.txt','w');
+%fileID = fopen('datasets/linear/train/train.txt','w');
 %fileID = fopen('datasets/linear/val/val.txt','w');
-%fileID = fopen('datasets/linear/vis/vis.txt','w');
+fileID = fopen('datasets/linear/vis/vis.txt','w');
 mvx = 22; %max horizontal speed
 mvy = 22; %max horizontal speed
 mvz = 9;  %max descend speed
 
-for i = 1 : 4500 %trajectory number
+for i = 1 : 100 %trajectory number
     if mod(i,4) == 0
     state = [400 + 200*(rand()-0.5) , 400 + 200*(rand()-0.5), 140 + 15*(rand()-0.5)];
     elseif mod(i,4) == 1
@@ -46,9 +46,9 @@ for i = 1 : 4500 %trajectory number
         historyy(t) =state(2);
         historyz(t) =state(3);
     end
-%   figure(i)
+%     figure(i)
 %     scatter3(historyx, historyy, historyz)
-    %plot3(historyx, historyy, historyz, 'o-')
-    hold on
+%     plot3(historyx, historyy, historyz, 'o-')
+%     hold on
 end
 fclose(fileID);

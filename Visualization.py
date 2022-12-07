@@ -22,8 +22,8 @@ import numpy as np
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', default = 'models/sgan-models', type=str)
-parser.add_argument('--dataset_name', default='vertical', type=str)
+parser.add_argument('--model_path', default = 'models/linear', type=str)
+parser.add_argument('--dataset_name', default='linear', type=str)
 parser.add_argument('--delim', default='tab')
 parser.add_argument('--loader_num_workers', default=0, type=int)
 parser.add_argument('--obs_len', default=10, type=int)
@@ -70,7 +70,7 @@ def generateFake(args, loader, generator):
             obs_trajp = obs_traj.cpu().numpy().reshape(10,3)
             pred_traj_gtp = pred_traj_gt.cpu().numpy().reshape(10,3)
             print(pred_traj_gtp)
-            for i in range(8):
+            for i in range(10):
                 ax.scatter(obs_trajp[i][0],obs_trajp[i][1], obs_trajp[i][2], s = 10, label= "generated trajectory", c = 'red')
                 ax.scatter(pred_traj_gtp[i][0],pred_traj_gtp[i][1], pred_traj_gtp[i][2], s = 10, label= "generated trajectory", c = 'red')
             pred_traj_fake_rel = generator(
@@ -81,7 +81,7 @@ def generateFake(args, loader, generator):
                 )
             pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(10,3)
             #pred_traj_fake = np.transpose(pred_traj_fake)
-            for i in range(8):
+            for i in range(10):
                 ax.scatter(pred_traj_fake[i][0],pred_traj_fake[i][1], pred_traj_fake[i][2], s = 10, label= "generated trajectory", c = 'blue')
             #print(pred_traj_fake)
         return pred_traj_fake
@@ -109,8 +109,8 @@ def main(args):
     _, vis_loader = data_loader(args, vis_path)
     
     pred_traj_fake = generateFake(args, vis_loader, generator)
-    pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(8,3)
-    pred_traj_fake = np.transpose(pred_traj_fake)
+    #pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(8,3)
+    #pred_traj_fake = np.transpose(pred_traj_fake)
     #print(pred_traj_fake)
     
     
