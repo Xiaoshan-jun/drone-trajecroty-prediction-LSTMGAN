@@ -105,6 +105,7 @@ class TrajectoryDataset(Dataset):
         non_linear_ped = []
         for path in all_files:
             data = read_file(path, delim)
+            print(data)
             frames = np.unique(data[:, 0]).tolist()
             frame_data = []
             for frame in frames:
