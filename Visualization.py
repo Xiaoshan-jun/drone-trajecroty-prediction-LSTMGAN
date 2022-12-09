@@ -22,8 +22,8 @@ import numpy as np
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', default = 'models/linear', type=str)
-parser.add_argument('--dataset_name', default='linear', type=str)
+parser.add_argument('--model_path', default = 'models/vertical', type=str)
+parser.add_argument('--dataset_name', default='vertical', type=str)
 parser.add_argument('--delim', default='tab')
 parser.add_argument('--loader_num_workers', default=0, type=int)
 parser.add_argument('--obs_len', default=10, type=int)
@@ -60,31 +60,49 @@ def get_generator(checkpoint):
 def generateFake(args, loader, generator):
     total_traj = 0
     with torch.no_grad():
+        ade = []
         for batch in loader:
             batch = [tensor.cuda() for tensor in batch]
             (obs_traj, pred_traj_gt, obs_traj_rel, pred_traj_gt_rel,
              non_linear_ped, loss_mask, seq_start_end) = batch
-            #print(obs_traj)
-            fig = plt.figure()
-            ax = fig.add_subplot(projection='3d')
-            obs_trajp = obs_traj.cpu().numpy().reshape(10,3)
-            pred_traj_gtp = pred_traj_gt.cpu().numpy().reshape(10,3)
-            print(pred_traj_gtp)
-            for i in range(10):
-                ax.scatter(obs_trajp[i][0],obs_trajp[i][1], obs_trajp[i][2], s = 10, label= "generated trajectory", c = 'red')
-                ax.scatter(pred_traj_gtp[i][0],pred_traj_gtp[i][1], pred_traj_gtp[i][2], s = 10, label= "generated trajectory", c = 'red')
+            #print(obs_traj.shape)
+            
             pred_traj_fake_rel = generator(
                     obs_traj, obs_traj_rel, seq_start_end
                 )
             pred_traj_fake = relative_to_abs(
                     pred_traj_fake_rel, obs_traj[-1]
                 )
-            pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(10,3)
+            pred_traj_fake = pred_traj_fake.cpu().numpy().reshape( 10,3)
             #pred_traj_fake = np.transpose(pred_traj_fake)
-            for i in range(10):
-                ax.scatter(pred_traj_fake[i][0],pred_traj_fake[i][1], pred_traj_fake[i][2], s = 10, label= "generated trajectory", c = 'blue')
+
+            obs_trajp = obs_traj.cpu().numpy().reshape(10,3)
+            pred_traj_gtp = pred_traj_gt.cpu().numpy().reshape(10,3)
+            diff = pred_traj_fake - pred_traj_gtp
+            ade.append(diff)
+            #print(pred_traj_gtp)
+            fig = plt.figure(figsize=(8, 6))
+            ax = fig.add_subplot(projection='3d')
+            ax.set_title('Gans predict vertical landing')
+            ax.set_xlabel('x')
+            ax.set_ylabel('y')
+            ax.set_zlabel('z')
+            #for i in range(10):
+            x = obs_trajp.T[0]
+            y = obs_trajp.T[1]
+            z = obs_trajp.T[2] 
+            ax.scatter(x,y, z, s = 10, label= "observed trajectory", c = 'red')
+            ax.scatter(pred_traj_gtp.T[0],pred_traj_gtp.T[1], pred_traj_gtp.T[2], s = 10, label= "real trajectory", c = 'orange')
+            ax.scatter(pred_traj_fake.T[0],pred_traj_fake.T[1], pred_traj_fake.T[2], s = 10, label= "predict trajectory", c = 'blue')
             #print(pred_traj_fake)
-        return pred_traj_fake
+            ax.legend()
+        p = []
+        for k in range(10):
+            p1 = 0
+            for j in range(100):
+                p1 += sum(abs(ade[j][k]))
+            p.append(p1)
+        return pred_traj_fake, p, ade
 
 def main(args):
     
@@ -108,7 +126,8 @@ def main(args):
 
     _, vis_loader = data_loader(args, vis_path)
     
-    pred_traj_fake = generateFake(args, vis_loader, generator)
+    pred_traj_fake, p, ade = generateFake(args, vis_loader, generator)
+    print(p)
     #pred_traj_fake = pred_traj_fake.cpu().numpy().reshape(8,3)
     #pred_traj_fake = np.transpose(pred_traj_fake)
     #print(pred_traj_fake)

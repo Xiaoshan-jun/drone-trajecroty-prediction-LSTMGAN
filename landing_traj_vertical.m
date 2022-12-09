@@ -1,13 +1,14 @@
 %land vertical
 %fileID = fopen('datasets/vertical/train/train.txt','w');
 %fileID = fopen('datasets/vertical/val/val.txt','w');
-fileID = fopen('datasets/vertical/vis/vis.txt','w');
+%fileID = fopen('datasets/vertical/vis/vis.txt','w');
+fileID = fopen('plot.txt','w');
 destination = [0, 0, 0];
 mvx = 22; %max horizontal speed
 mvy = 22; %max horizontal speed
 mvz = 9;  %max descend speed
 
-for i = 1 : 100 %trajectory number
+for i = 1 : 4 %trajectory number
     if mod(i,4) == 0
     state = [200 + 100*(rand()-0.5) , 200 + 100*(rand()-0.5), 75 + 7*(rand()-0.5)];
     elseif mod(i,4) == 1
@@ -73,9 +74,16 @@ for i = 1 : 100 %trajectory number
         historyy(t) =state(2);
         historyz(t) =state(3);
     end
-%     figure(i)
-%     scatter3(historyx, historyy, historyz)
-%     plot3(historyx, historyy, historyz, 'o-')
-    %hold on
+    figure(i)
+    str = sprintf("direction %i", i);
+    scatter3(historyx, historyy, historyz)
+    plot3(historyx, historyy, historyz, 'o-')
+    title(str, 'FontSize', 14)
+    xlabel('x', 'FontSize', 14)
+    ylabel('y', 'FontSize', 14)
+    zlabel('z', 'FontSize', 14)
+    hold on
+    str = sprintf('vertical%d.png', i);
+    print(gcf,str,'-dpng','-r900'); 
 end
 fclose(fileID);

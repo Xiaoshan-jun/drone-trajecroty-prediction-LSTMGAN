@@ -508,6 +508,8 @@ class TrajectoryGenerator(nn.Module):
         batch = obs_traj_rel.size(1)
         # Encode seq
         final_encoder_h = self.encoder(obs_traj_rel)
+        #print("final_encoder_h")
+        #print(final_encoder_h)
         # Pool States
         if self.pooling_type:
             end_pos = obs_traj[-1, :, :]
@@ -531,7 +533,8 @@ class TrajectoryGenerator(nn.Module):
         decoder_c = torch.zeros(
             self.num_layers, batch, self.decoder_h_dim
         ).cuda()
-
+        #print("decoder_h")
+        #print(decoder_h)
         state_tuple = (decoder_h, decoder_c)
         last_pos = obs_traj[-1]
         last_pos_rel = obs_traj_rel[-1]
@@ -544,7 +547,7 @@ class TrajectoryGenerator(nn.Module):
             seq_start_end,
         )
         pred_traj_fake_rel, final_decoder_h = decoder_out
-
+        #print(pred_traj_fake_rel)
         return pred_traj_fake_rel
 
 
