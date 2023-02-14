@@ -4,17 +4,18 @@
 %fileID = fopen('plot.txt','w');
 agentcount = 0;
 t = 0;
-aa = 18.9;
+aa = 17.2;
 b = 0.1;
-for i = 11:11
-    filename = sprintf('realdata/automatic/flightdata%d.csv', i);
-    filename2 = sprintf('datasets/real/train/train%i.txt', i);
+for i = 25:25
+    filename = sprintf('realdata/manual2/flightdata%d.csv', i);
+    filename2 = sprintf('datasets/real/vis/mtrain%i.txt', i);
     fileID = fopen(filename2,'w');
+    %fileID = fopen('plot.txt','w');
     T = readtable(filename);
     a = size(T);
     tn = a(1)/20;
     tn = floor(tn);
-    for j = 1 : 40
+    for j = 0 : 40
             historyx = [];
             historyy =[];
             historyz =[];
@@ -52,16 +53,15 @@ for i = 11:11
             figure(1)
             scatter3(historyx, historyy, historyz)
             plot3(historyx, historyy, historyz, 'o-')
-            title("real trajectory example 4", 'FontSize', 14)
+            title("real landing", 'FontSize', 14)
             xlabel('x', 'FontSize', 14)
             ylabel('y', 'FontSize', 14)
             zlabel('z', 'FontSize', 14)
-            str = sprintf('real4.png', i);
-            if j == 35
-                print(gcf,str,'-dpng','-r900'); 
-            end
     end
 end
+
+% str = sprintf('real20.png');
+% print(gcf,str,'-dpng','-r900'); 
 fclose(fileID);
 %%
 clc

@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO, format=FORMAT, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 # Dataset options
-parser.add_argument('--dataset_name', default='real', type=str)
+parser.add_argument('--dataset_name', default='linear', type=str)
 parser.add_argument('--delim', default='\t')
 parser.add_argument('--loader_num_workers', default=0, type=int)
 parser.add_argument('--obs_len', default=10, type=int)
