@@ -15,17 +15,17 @@ for i = 1:1
     a = size(T);
     tn = a(1)/20;
     tn = floor(tn);
-    for j = 1 : tn
+    for j = 1 : tn 
             historyx = [];
             historyy =[];
             historyz =[];
         for k = 1:20
-            p = (k-1)*tn + j;
+            p = (k-1)*tn + randi(floor(tn/2));
+            t = table2array(T(floor(p), 1));
             x = table2array(T(floor(p), 2));
             y = table2array(T(floor(p), 3));
             z = table2array(T(floor(p), 4));
-            fprintf(fileID,'%i\t%4.4f\t%4.4f\t%4.4f\n',t,x,y,z);
-            t = t + 1;
+            fprintf(fileID,'%2.2f\t%4.4f\t%4.4f\t%4.4f\n',t,x,y,z);
             historyx(k) =  x;
             historyy(k) =y;
             historyz(k) =z;
