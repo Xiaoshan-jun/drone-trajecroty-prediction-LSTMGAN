@@ -25,7 +25,7 @@ for i = 0:80
     T = readtable(filename);
     T = table2array(T);
     for k = 1:size(T)
-        T(k, 1) = round(T(k, 1));
+        T(k, 1) = round(T(k, 1), );
     end
     a = size(T);
     tn = a(1);
@@ -54,7 +54,7 @@ for i = 0:80
                 if first == 1
                     h = 'new';
                     first = 0;
-                elseif k <= half
+                elseif k < half
                     h = 'past';
                 else
                     h = 'future';
