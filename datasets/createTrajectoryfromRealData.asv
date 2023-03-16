@@ -9,23 +9,23 @@ b = 0.1;
 %fileID = fopen('realdata2/traindata.txt','w');
 %fileID = fopen('realdata2/prompt.txt','w');
 %fileID = fopen('realdata2/valdata.txt','w');
-for i = 0:80
+for i = 0:40
     r = rem( i , 10 );
-    if r ~= 9
-        continue;
-    end
+%     if r ~= 9
+%         continue;
+%     end
     if i == 70
         continue;
     end
-    filename = sprintf('realdata2/flightdata%d.csv', i);
-    filename2 = sprintf('realdata2/valdata%d.txt', i);
+    filename = sprintf('realdata/manual/flightdata%d.csv', i);
+    filename2 = sprintf('realdata/valdata%d.txt', i);
     fileID = fopen(filename2,'w');
     
     %fileID = fopen('plot.txt','w');
     T = readtable(filename);
     T = table2array(T);
     for k = 1:size(T)
-        T(k, 1) = round(T(k, 1), );
+        T(k, 1) = round(T(k, 1));
     end
     a = size(T);
     tn = a(1);
@@ -54,7 +54,7 @@ for i = 0:80
                 if first == 1
                     h = 'new';
                     first = 0;
-                elseif k < half
+                elseif k <= half
                     h = 'past';
                 else
                     h = 'future';

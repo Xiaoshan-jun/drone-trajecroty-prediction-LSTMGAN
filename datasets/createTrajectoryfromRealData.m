@@ -4,28 +4,29 @@
 %fileID = fopen('plot.txt','w');
 agentcount = 0;
 t = 0;
-aa = 17.2;
 b = 0.1;
-%fileID = fopen('realdata2/traindata.txt','w');
+fileID = fopen('realdata2/traindata.txt','w');
 %fileID = fopen('realdata2/prompt.txt','w');
 %fileID = fopen('realdata2/valdata.txt','w');
 for i = 0:80
     r = rem( i , 10 );
-    if r ~= 9
+    if r == 8 
+        continue;
+    end
+    if r == 9
         continue;
     end
     if i == 70
         continue;
     end
     filename = sprintf('realdata2/flightdata%d.csv', i);
-    filename2 = sprintf('realdata2/valdata%d.txt', i);
-    fileID = fopen(filename2,'w');
-    
+    %filename2 = sprintf('realdata/valdata%d.txt', i);
+    %fileID = fopen(filename2,'w');
     %fileID = fopen('plot.txt','w');
     T = readtable(filename);
     T = table2array(T);
     for k = 1:size(T)
-        T(k, 1) = round(T(k, 1));
+    T(k, 1) = round(T(k, 1),1);
     end
     a = size(T);
     tn = a(1);
