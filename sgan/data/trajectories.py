@@ -43,11 +43,18 @@ def read_file(_path, delim='\t'):
         delim = '\t'
     elif delim == 'space':
         delim = ' '
+    x = 0
     with open(_path, 'r') as f:
         for line in f:
             line = line.strip().split(delim)
-            line = [float(i) for i in line]
-            data.append(line)
+            if(line[0] == "new"):
+                x += 1
+            line2 = [20*x + float(line[1])]
+            line2.append(x)
+            line2 = line2 + [float(i) for i in line[2:]]
+            print(line2)
+            data.append(line2)
+    #print(np.asarray(data))
     return np.asarray(data)
 
 
@@ -139,8 +146,9 @@ class TrajectoryDataset(Dataset):
                     rel_curr_ped_seq[:, 1:] = \
                         curr_ped_seq[:, 1:] - curr_ped_seq[:, :-1]
                     _idx = num_peds_considered
-                    #print(curr_seq[_idx, :, pad_front:pad_end].shape)
-                    #print(curr_ped_seq.shape)
+                    print(curr_seq[_idx, :, pad_front:pad_end].shape)
+                    print(curr_ped_seq.shape)
+                    print(ped_id)
                     curr_seq[_idx, :, pad_front:pad_end] = curr_ped_seq
                     curr_seq_rel[_idx, :, pad_front:pad_end] = rel_curr_ped_seq
                     # Linear vs Non-Linear Trajectory
