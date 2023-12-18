@@ -13,27 +13,13 @@ In this repository we release models from the papers
 
 Make sure you have `Python>=3.6` installed on your machine.
 
-Install JAX and python dependencies by running:
+
+
+## Usage
 
 
 
-## Vision Transformer
-
-by Alexey Dosovitskiy\*†, Lucas Beyer\*, Alexander Kolesnikov\*, Dirk
-Weissenborn\*, Xiaohua Zhai\*, Thomas Unterthiner, Mostafa Dehghani, Matthias
-Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkoreit and Neil Houlsby\*†.
-
-(\*) equal technical contribution, (†) equal advising.
-
-![Figure 1 from paper](vit_figure.png)
-
-Overview of the model: we split an image into fixed-size patches, linearly embed
-each of them, add position embeddings, and feed the resulting sequence of
-vectors to a standard Transformer encoder. In order to perform classification,
-we use the standard approach of adding an extra learnable "classification token"
-to the sequence.
-
-### Results
+## Results
 
 
 
