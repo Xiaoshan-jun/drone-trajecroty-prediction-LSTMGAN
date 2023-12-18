@@ -1,4 +1,4 @@
-#predict trajectory with LSTM-GAN
+#Landing Trajectory Prediction for UAS Based on Generative Adversarial Network
 ## Usage
 main.py will do the following
 1. generate the simulated airspace
