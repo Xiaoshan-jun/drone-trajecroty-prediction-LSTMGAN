@@ -5,70 +5,8 @@ In this repository we release models from the papers
 - [Landing Trajectory Prediction for UAS Based on Generative Adversarial Network](https://arc.aiaa.org/doi/abs/10.2514/6.2023-0127)
 
 
-The models were pre-trained on the [ImageNet](http://www.image-net.org/) and
-[ImageNet-21k](http://www.image-net.org/) datasets. We provide the code for
-fine-tuning the released models in
-[JAX](https://jax.readthedocs.io)/[Flax](http://flax.readthedocs.io).
-
-Table of contents:
-
-- [Vision Transformer and MLP-Mixer Architectures](#vision-transformer-and-mlp-mixer-architectures)
-	- [Colab](#colab)
-	- [Installation](#installation)
-	- [Fine-tuning a model](#fine-tuning-a-model)
-	- [Vision Transformer](#vision-transformer)
-		- [Available ViT models](#available-vit-models)
-		- [Expected ViT results](#expected-vit-results)
-	- [MLP-Mixer](#mlp-mixer)
-		- [Available Mixer models](#available-mixer-models)
-		- [Expected Mixer results](#expected-mixer-results)
-	- [LiT models](#lit-models)
-	- [Running on cloud](#running-on-cloud)
-		- [Create a VM](#create-a-vm)
-		- [Setup VM](#setup-vm)
-	- [Bibtex](#bibtex)
-	- [Disclaimers](#disclaimers)
-	- [Changelog](#changelog)
-
-
-## Colab
-
-Below Colabs run both with GPUs, and TPUs (8 cores, data parallelism).
-
-The first Colab demonstrates the JAX code of Vision Transformers and MLP Mixers.
-This Colab allows you to edit the files from the repository directly in the
-Colab UI and has annotated Colab cells that walk you through the code step by
-step, and lets you interact with the data.
-
-https://colab.research.google.com/github/google-research/vision_transformer/blob/main/vit_jax.ipynb
-
-The second Colab allows you to explore the >50k Vision Transformer and hybrid
-checkpoints that were used to generate the data of the third paper "How to train
-your ViT? ...". The Colab includes code to explore and select checkpoints, and
-to do inference both using the JAX code from this repo, and also using the
-popular [`timm`] PyTorch library that can directly load these checkpoints as
-well. Note that a handful of models are also available directly from TF-Hub:
-[sayakpaul/collections/vision_transformer] (external contribution by [Sayak
-Paul]).
-
-The second Colab also lets you fine-tune the checkpoints on any tfds dataset
-and your own dataset with examples in individual JPEG files (optionally directly
-reading from Google Drive).
-
-https://colab.research.google.com/github/google-research/vision_transformer/blob/main/vit_jax_augreg.ipynb
-
-**Note**: As for now (6/20/21) Google Colab only supports a single GPU (Nvidia
-Tesla T4), and TPUs (currently TPUv2-8) are attached indirectly to the Colab VM
-and communicate over slow network, which leads to pretty bad training speed. You
-would usually want to set up a dedicated machine if you have a non-trivial
-amount of data to fine-tune on. For details see the
-[Running on cloud](#running-on-cloud) section.
-
-
-[`timm`]: https://github.com/rwightman/pytorch-image-models
-[sayakpaul/collections/vision_transformer]: https://tfhub.dev/sayakpaul/collections/vision_transformer
-[Sayak Paul]: https://github.com/sayakpaul
-
+## Introduction
+![Alt text](training process.drawio.png)
 
 
 ## Installation
@@ -77,87 +15,6 @@ Make sure you have `Python>=3.6` installed on your machine.
 
 Install JAX and python dependencies by running:
 
-```
-# If using GPU:
-pip install -r vit_jax/requirements.txt
-
-# If using TPU:
-pip install -r vit_jax/requirements-tpu.txt
-```
-
-For newer versions of [JAX](https://github.com/google/jax), follow the instructions
-provided in the corresponding repository linked here. Note that installation
-instructions for CPU, GPU and TPU differs slightly.
-
-Install [Flaxformer](https://github.com/google/flaxformer), follow the instructions
-provided in the corresponding repository linked here.
-
-For more details refer to the section [Running on cloud](#running-on-cloud)
-below.
-
-
-## Fine-tuning a model
-
-You can run fine-tuning of the downloaded model on your dataset of interest. All
-models share the same command line interface.
-
-For example for fine-tuning a ViT-B/16 (pre-trained on imagenet21k) on CIFAR10
-(note how we specify `b16,cifar10` as arguments to the config, and how we
-instruct the code to access the models directly from a GCS bucket instead of
-first downloading them into the local directory):
-
-```bash
-python -m vit_jax.main --workdir=/tmp/vit-$(date +%s) \
-    --config=$(pwd)/vit_jax/configs/vit.py:b16,cifar10 \
-    --config.pretrained_dir='gs://vit_models/imagenet21k'
-```
-
-In order to fine-tune a Mixer-B/16 (pre-trained on imagenet21k) on CIFAR10:
-
-```bash
-python -m vit_jax.main --workdir=/tmp/vit-$(date +%s) \
-    --config=$(pwd)/vit_jax/configs/mixer_base16_cifar10.py \
-    --config.pretrained_dir='gs://mixer_models/imagenet21k'
-```
-
-The "How to train your ViT? ..." paper added >50k checkpoints that you can
-fine-tune with the [`configs/augreg.py`] config. When you only specify the model
-name (the `config.name` value from [`configs/model.py`]), then the best i21k
-checkpoint by upstream validation accuracy ("recommended" checkpoint, see
-section 4.5 of the paper) is chosen. To make up your mind which model you want
-to use, have a look at Figure 3 in the paper. It's also possible to choose a
-different checkpoint (see Colab [`vit_jax_augreg.ipynb`]) and then specify the
-value from the `filename` or `adapt_filename` column, which correspond to the
-filenames without `.npz` from the [`gs://vit_models/augreg`] directory.
-
-```bash
-python -m vit_jax.main --workdir=/tmp/vit-$(date +%s) \
-    --config=$(pwd)/vit_jax/configs/augreg.py:R_Ti_16 \
-    --config.dataset=oxford_iiit_pet \
-    --config.base_lr=0.01
-```
-
-Currently, the code will automatically download CIFAR-10 and CIFAR-100 datasets.
-Other public or custom datasets can be easily integrated, using [tensorflow
-datasets library](https://github.com/tensorflow/datasets/). Note that you will
-also need to update `vit_jax/input_pipeline.py` to specify some parameters about
-any added dataset.
-
-Note that our code uses all available GPUs/TPUs for fine-tuning.
-
-To see a detailed list of all available flags, run `python3 -m vit_jax.train
---help`.
-
-Notes on memory:
-
-- Different models require different amount of memory. Available memory also
-  depends on the accelerator configuration (both type and count). If you
-  encounter an out-of-memory error you can increase the value of
-  `--config.accum_steps=8` -- alternatively, you could also decrease the
-  `--config.batch=512` (and decrease `--config.base_lr` accordingly).
-- The host keeps a shuffle buffer in memory. If you encounter a host OOM (as
-  opposed to an accelerator OOM), you can decrease the default
-  `--config.shuffle_buffer=50000`.
 
 
 ## Vision Transformer
@@ -182,7 +39,7 @@ We provide a variety of ViT models in different GCS buckets. The models can be
 downloaded with e.g.:
 
 ```
-wget https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz
+wget https://storage.googleapis.com/vit_models/imageneels were pre-trained on the ImageNet and ImageNet-21k datasets. We provide the code for fine-tuning the released models in JAX/Flax.t21k/ViT-B_16.npz
 ```
 
 The model filenames (without the `.npz` extension) correspond to the
