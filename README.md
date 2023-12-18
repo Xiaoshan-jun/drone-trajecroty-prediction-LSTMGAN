@@ -2,12 +2,8 @@
 
 In this repository we release models from the papers
 
-- [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
-- [MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/abs/2105.01601)
-- [How to train your ViT? Data, Augmentation, and Regularization in Vision Transformers](https://arxiv.org/abs/2106.10270)
-- [When Vision Transformers Outperform ResNets without Pretraining or Strong Data Augmentations](https://arxiv.org/abs/2106.01548)
-- [LiT: Zero-Shot Transfer with Locked-image text Tuning](https://arxiv.org/abs/2111.07991)
-- [Surrogate Gap Minimization Improves Sharpness-Aware Training](https://arxiv.org/abs/2203.08065)
+- [Landing Trajectory Prediction for UAS Based on Generative Adversarial Network](https://arc.aiaa.org/doi/abs/10.2514/6.2023-0127)
+
 
 The models were pre-trained on the [ImageNet](http://www.image-net.org/) and
 [ImageNet-21k](http://www.image-net.org/) datasets. We provide the code for
