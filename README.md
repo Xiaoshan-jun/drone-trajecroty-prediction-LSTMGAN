@@ -7,6 +7,10 @@ In this repository we release models from the papers
 
 ## Introduction
 ![Alt text](https://github.com/Xiaoshan-jun/sganATG/blob/main/paper/figure/training%20process.png)
+we introduce a novel approach to landing trajectory prediction for Unmanned Aircraft Systems (UAS) utilizing Generative Adversarial Networks (GANs). In our study, we employ Long Short-Term Memory (LSTM) neural network layers as the core architecture for both the generator and discriminator in our model.
+On our drone landing dataset, which comprising over 2600 manually controlled drone trajectories, this method can proficiently predict future trajectories spanning an 10 second duration based on data from the preceding 10 seconds.
+
+![Alt text](https://github.com/Xiaoshan-jun/sganATG/blob/main/paper/figure/GANreal.png)
 
 
 ## Installation
