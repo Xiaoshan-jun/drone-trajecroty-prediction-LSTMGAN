@@ -13,20 +13,20 @@ On our drone landing dataset, which comprising over 2600 manually controlled dro
 ![Alt text](https://github.com/Xiaoshan-jun/sganATG/blob/main/paper/figure/GANreal.png)
 
 
-## Installation
-
-Make sure you have `Python>=3.6` installed on your machine.
-
-
 
 ## Usage
-
-
-
-## Results
-
-
-
+train
+```
+python train.py
+```
+test predict, you need to change the args.model_path into the path you saved the model(end with .pt) first
+```
+python visualization.py 
+```
+formal evaluation, you need to change the arg.model_path into the path you saved the model(end with .pt) first
+```
+python evaluate_model.py
+```
 
 
 
