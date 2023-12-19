@@ -6,7 +6,7 @@ In this repository we release models from the papers
 
 
 ## Introduction
-![Alt text](https://github.com/Xiaoshan-jun/sganATG/blob/main/training%20process.drawio.png)
+![Alt text](https://github.com/Xiaoshan-jun/sganATG/blob/main/paper/figure/training%20process.png)
 
 
 ## Installation
