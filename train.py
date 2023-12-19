@@ -27,17 +27,17 @@ logging.basicConfig(level=logging.INFO, format=FORMAT, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 # Dataset options
-parser.add_argument('--dataset_name', default='linear', type=str)
-parser.add_argument('--delim', default='\t')
-parser.add_argument('--loader_num_workers', default=0, type=int)
-parser.add_argument('--obs_len', default=10, type=int)
-parser.add_argument('--pred_len', default=10, type=int)
-parser.add_argument('--skip', default=1, type=int)
+parser.add_argument('--dataset_name', default='linear', type=str) #dataset
+parser.add_argument('--delim', default='\t') #dataset format parameter
+parser.add_argument('--loader_num_workers', default=0, type=int) #based on cpu, the bigger, the dataloader will be faster
+parser.add_argument('--obs_len', default=10, type=int) #the length of the past trajectory
+parser.add_argument('--pred_len', default=10, type=int) #the length of the predicting trajectory
+parser.add_argument('--skip', default=1, type=int) #decide the frame of the trajectory
 
 # Optimization
-parser.add_argument('--batch_size', default=64, type=int)
-parser.add_argument('--num_iterations', default=10000, type=int)
-parser.add_argument('--num_epochs', default=10000, type=int)
+parser.add_argument('--batch_size', default=64, type=int) #dataloader parameter
+parser.add_argument('--num_iterations', default=10000, type=int) #
+parser.add_argument('--num_epochs', default=10000, type=int) #one epoch train
 
 # Model Options
 parser.add_argument('--embedding_dim', default=32, type=int)
@@ -109,25 +109,20 @@ def get_dtypes(args):
 
 
 def main(args):
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_num
-    train_path = get_dset_path(args.dataset_name, 'train')
-    val_path = get_dset_path(args.dataset_name, 'val')
-
-    long_dtype, float_dtype = get_dtypes(args)
-
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_num #decide which gpu device we want to use
+    train_path = get_dset_path(args.dataset_name, 'train') #get train path for Dataloader
+    val_path = get_dset_path(args.dataset_name, 'val')#get val path for Dataloader
+    long_dtype, float_dtype = get_dtypes(args) #decide data type based on whether we use gpu
     logger.info("Initializing train dataset")
-    train_dset, train_loader = data_loader(args, train_path)
+    train_dset, train_loader = data_loader(args, train_path) #create torch.DataLoader for training
     logger.info("Initializing val dataset")
-    _, val_loader = data_loader(args, val_path)
-
-    iterations_per_epoch = len(train_dset) / args.batch_size / args.d_steps
+    _, val_loader = data_loader(args, val_path) #create torch.DataLoader for evaluating
+    iterations_per_epoch = len(train_dset) / args.batch_size / args.d_steps #calculate iteration per epoch
     if args.num_epochs:
-        args.num_iterations = int(iterations_per_epoch * args.num_epochs)
-
+        args.num_iterations = int(iterations_per_epoch * args.num_epochs) #calculate how many iterations are required
     logger.info(
         'There are {} iterations per epoch'.format(iterations_per_epoch)
     )
-
     generator = TrajectoryGenerator(
         obs_len=args.obs_len,
         pred_len=args.pred_len,
@@ -145,13 +140,11 @@ def main(args):
         bottleneck_dim=args.bottleneck_dim,
         neighborhood_size=args.neighborhood_size,
         grid_size=args.grid_size,
-        batch_norm=args.batch_norm)
-
-    generator.apply(init_weights)
-    generator.type(float_dtype).train()
+        batch_norm=args.batch_norm) #create generator neural network
+    generator.apply(init_weights) #apply init_weights function to initialize the generator NN
+    generator.type(float_dtype).train() #start train
     logger.info('Here is the generator:')
     logger.info(generator)
-
     discriminator = TrajectoryDiscriminator(
         obs_len=args.obs_len,
         pred_len=args.pred_len,
@@ -161,22 +154,16 @@ def main(args):
         num_layers=args.num_layers,
         dropout=args.dropout,
         batch_norm=args.batch_norm,
-        d_type=args.d_type)
-
-    discriminator.apply(init_weights)
-    discriminator.type(float_dtype).train()
+        d_type=args.d_type) #create discriminator neural network
+    discriminator.apply(init_weights) #apply init_weights function to initialize the discriminator NN
+    discriminator.type(float_dtype).train() #start train
     logger.info('Here is the discriminator:')
     logger.info(discriminator)
-
-    g_loss_fn = gan_g_loss
-    d_loss_fn = gan_d_loss
-
-    optimizer_g = optim.Adam(generator.parameters(), lr=args.g_learning_rate)
-    optimizer_d = optim.Adam(
-        discriminator.parameters(), lr=args.d_learning_rate
-    )
-
-    # Maybe restore from checkpoint
+    g_loss_fn = gan_g_loss #generator loss function
+    d_loss_fn = gan_d_loss #discriminator loss function
+    optimizer_g = optim.Adam(generator.parameters(), lr=args.g_learning_rate)#set optimizer
+    optimizer_d = optim.Adam(discriminator.parameters(), lr=args.d_learning_rate)#set optimizer
+    # -----------------Maybe restore from checkpoint----------------------------------------------------------------------
     restore_path = None
     if args.checkpoint_start_from is not None:
         restore_path = args.checkpoint_start_from
@@ -223,11 +210,12 @@ def main(args):
             'd_best_state_nl': None,
             'best_t_nl': None,
         }
-    t0 = None
+        #-----------------------------------------------------------------------------------------------
+    t0 = None #initial iteration count
     while t < args.num_iterations:
-        gc.collect()
-        d_steps_left = args.d_steps
-        g_steps_left = args.g_steps
+        gc.collect() #free memory
+        d_steps_left = args.d_steps #how many discriminators step per iteration
+        g_steps_left = args.g_steps #how many generator step per iteration
         epoch += 1
         logger.info('Starting epoch {}'.format(epoch))
         for batch in train_loader:
